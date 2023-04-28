@@ -1,0 +1,1594 @@
+                        Umask
+
+******Umask calculation for root user *****
+note: 1.for root user default value is 022 
+ 2.for file permission is 666 and for Directry permission is 777
+
+eg :to find file permission value
+mask value is 022 and file default value is 666
+               421421421    
+666(default)-->rw-rw-rw-
+                0  2  2(default value)
+               --------- 
+                4+2,4,4    
+                 6  4 4
+                --------
+                 rw-r--r--(answer for file permission values) 
+ 
+eg:to find dir permossion value
+               421421421 
+777(default)-->rwxrwxrwx
+                0  2 2(default value)
+               ---------- 
+                4+2+1,4+1,4+1
+                  7    5   5     
+                 rwxr-r-xr-x(answer for file permission values) 
+
+******Umask calculation for ordinery user *****
+note: 1.for ordinery user default value is 002 
+ 2.for file permission is 664 and for Directry permission is 775
+
+eg :to find file permission value
+mask value is 002 and file default value is 664
+               421421421
+664(default)-->rw-rw-r--
+                0  0  2
+               ---------
+                4+2,4+2,4
+                 6   6  4
+                ---------
+                rw-rw-r--(answer for file permission values)
+
+eg:to find dir permossion value
+               421421421 
+775(default)-->rwxrwxr-x
+               0   0  2
+               --------
+               4+2+1,4+2+1,4+1
+                 7     7    5
+               --------------
+                rwxrwxr-x(answer for file permission values)
+***in root***
+1)to change umask value 
+   -->use command umask 111(value as u need)and it will change umask value
+2)create file using below command
+  --> touch test.txt
+  -->ls -l test.txt(to see permissions)
+
+2)create dir using below command
+   --->mkdir test_dir
+   --->ls -ld test_dir(to see permissions)
+
+***in ordinery user***
+note for root user do same as above but permissions will change
+eg for file:
+[pen@bharathi ~]$ umask 111
+[pen@bharathi ~]$ umask
+0111
+[pen@bharathi ~]$ touch test.txt
+[pen@bharathi ~]$ ls -l test.txt
+-rw-rw-r-- 1 pen pen 0 Mar 31 09:49 test.txt
+
+eg for Dir:
+[pen@bharathi ~]$ mkdir test_dir
+[pen@bharathi ~]$ ls -ld test_dir
+drw-rw-rw- 2 pen pen 6 Mar 31 09:52 test_dir
+
+****************************************************************************************************
+
+                            Shell scripting
+
+1)vi prg1.sh     
+#!/bin/bash
+#my first shell script
+x=10
+echo $x
+#end
+
+[root@bharathi ~]# ls -l prg1.sh
+-rw-r--r-- 1 root root 53 Mar 31 00:17 prg1.sh
+[root@bharathi ~]# /root/prg1.sh
+-bash: /root/prg1.sh: Permission denied
+[root@bharathi ~]# chmod u+x /root/prg1.sh
+[root@bharathi ~]# /root/prg1.sh
+10
+[root@bharathi ~]# cat prg1.sh
+#!/bin/bash
+#my first shell script
+x=10
+echo $x
+#end
+******************************************************************************************************
+
+
+2)vi prg2.sh
+#!/bin/bash
+echo "Enter a value : "
+read x
+echo " You entered $x "
+#end
+
+[root@bharathi ~]# ls -l prg2.sh
+-rw-rw-rw- 1 root root 72 Mar 31 00:49 prg2.sh
+[root@bharathi ~]# read -p "Enter a value" x
+Enter a value10(give any value)
+[root@bharathi ~]# echo $x
+10
+[root@bharathi ~]# cat prg2.sh
+#!/bin/bash
+echo "Enter a value : "
+read x
+echo " You entered $x "
+#end
+******************************************************************************************************
+
+3)[root@bharathi ~]# vi prg3.sh
+#!/bin/bash
+read -p "Enter your name:" name
+echo $name
+[root@bharathi ~]# ./prg3.sh
+-bash: ./prg3.sh: Permission denied
+[root@bharathi ~]# chmod u+x ./prg3.sh
+[root@bharathi ~]# ./prg3.sh
+Enter your name:Bharthic
+Bharthic
+[root@bharathi ~]# cat ./prg3.sh
+#!/bin/bash
+read -p "Enter your name:" name
+echo $name
+****************************************************************************************************
+
+4)[root@bharathi ~]# vi prg4.sh
+#!/bin/bash
+#!/bin/bash
+echo "Your login name is $(logname)"
+echo "Your pwd is `pwd`"
+echo "The server name is `hostname`"
+echo "The kernel version is: $(uname -r)"
+echo "The Redhat Release is:"
+cat /etc/redhat-release
+
+[root@bharathi ~]# cat /etc/redhat-release
+[root@bharathi ~]# ./prg4.sh
+-bash: ./prg4.sh: Permission denied
+[root@bharathi ~]# chmod u+x ./prg4.sh
+[root@bharathi ~]# ./prg4.sh
+[root@bharathi ~]# ./prg4.sh
+Your login name is root
+Your pwd is /root
+The server name is bharathi.alclabs.in
+The kernel version is: 4.18.0-240.el8.x86_64
+The Redhat Release is:
+Red Hat Enterprise Linux release 8.3 (Ootpa)
+*****************************************************************************************************
+
+5)[root@bharathi ~]# vi prg5.sh
+#!/bin/bash
+read -s -p "Enter your password:" pass
+echo -e "\Your Password  is $pass"
+#End
+[root@bharathi ~]# ./prg5.sh
+-bash: ./prg5.sh: Permission denied
+[root@bharathi ~]# chmod u+x ./prg5.sh
+[root@bharathi ~]# ./prg5.sh
+Enter your password:\Your Password  is bharthi(can give any password)
+[root@bharathi ~]# cat ./prg5.sh
+#!/bin/bash
+read -s -p "Enter your password:" pass
+echo -e "\Your Password  is $pass"
+#End
+******************************************************************************************************
+
+6)script to create user and set passwrd
+[root@bharathi ~]# vi prg6.sh
+#!/bin/bash
+#Script to create user and set password for the same.
+read -p "Enter the user name:" name
+read -sp "Enter the password for user $name :" pass
+useradd $name
+echo "$name:$pass"|chpasswd
+echo -e "\nUser $name created.."
+#End of the script
+
+[root@bharathi ~]# ./prg6.sh
+-bash: ./prg6.sh: Permission denied
+[root@bharathi ~]# chmod u+x prg6.sh
+[root@bharathi ~]# ./prg6.sh
+Enter the user name:sweety(enter new user name)
+Enter the password for user sweety :
+User sweety created..
+******************************************************************************************************
+7)script to list group members from group
+[root@bharathi ~]# vi prg7.sh
+#!/bin/bash
+echo "Print members of a group"
+read -p "Enter the group name:" gname
+echo "Below are members of $gname group:"
+groupmems -l -g $gname
+#End
+[root@bharathi ~]# ./prg7.sh
+-bash: ./prg7.sh: Permission denied
+[root@bharathi ~]# chmod g+x prg7.sh
+[root@bharathi ~]# ./prg7.sh
+Print members of a group
+Enter the group name:sales
+Below are members of sales group:
+bckadm0001
+****************************************************************************************************
+8)script for arthmetic expression and arthmetic operation
+[root@bharathi ~]# vi myprg8.sh
+#!/bin/bash
+read -p "Enter the first number:" x
+read -p"Enter the second number:" y
+echo "Arithmetic Operations:"
+result=$((x+y))
+echo "The addition is $result"
+result=$((x-y))
+echo "The subtraction is $result"
+result=$((x*y))
+echo "The Multiplication is $result"
+result=$((x%y))
+echo "The Modulus is $result"
+result=$((x/y))
+echo "The Division is $result"
+#End
+
+[root@bharathi ~]# ./myprg8.sh
+-bash: ./myprg8.sh: Permission denied
+[root@bharathi ~]# chmod u+x ./myprg8.sh
+[root@bharathi ~]# ./myprg8.sh
+Enter the first number:50
+Enter the second number:100
+Arithmetic Operations:
+The addition is 150
+The subtraction is -50
+The Multiplication is 5000
+The Modulus is 50
+The Division is 0
+
+or
+
+8)script for arthmetic expression and arthmetic operation by using same scripts of above and syntax is (`)
+[root@bharathi ~]# vi myprg8.sh
+#!/bin/bash
+read -p "Enter the first number:" x
+read -p"Enter the second number:" y
+echo "Arithmetic Operations:"
+result=`expr $x + $y`
+echo "The addition is $result"
+result=`expr $x - $y`
+echo "The subtraction is $result"
+result=`expr $x \* $y`
+echo "The Multiplication is $result"
+result=`expr $x % $y`
+echo "The Modulus is $result"
+result=`expr $x / $y`
+echo "The Division is $result"
+#End
+[root@bharathi ~]# chmod u+x ./myprg8.sh
+[root@bharathi ~]# ./myprg8.sh
+Enter the first number:12
+Enter the second number:100
+Arithmetic Operations:
+The addition is 112
+The subtraction is -88
+The Multiplication is 1200
+The Modulus is 12
+The Division is 0
+***************************************************************************************************
+9)script using if condition with test keyword
+[root@bharathi ~]# vi prg9.sh
+#!/bin/bash
+#Demonstrate if condition
+read -p "Enter the first number:" num1
+read -p "Enter the second number:" num2
+#Now compare if num1 is big
+if test $num1 -gt $num2
+then
+    echo "$num1 is big"
+fi
+
+#Compare if num2 is big
+if test $num2 -lt $num1
+then
+    echo "$num2 is big"
+fi
+
+#Check if both are equal
+if test $num1 -eq $num2
+then
+    echo "Both are equal"
+fi
+
+#check for inquality
+if test $num1 -ne $num2
+then
+    echo "Numbers are not equal"
+fi
+#End of the script
+
+[root@bharathi ~]# ./prg9.sh
+-bash: ./prg9.sh: Permission denied
+[root@bharathi ~]# chmod u+x prg9.sh
+[root@bharathi ~]# ./prg9.sh
+Enter the first number:20
+Enter the second number:30
+Numbers are not equal
+***************************************************************************************
+10)script using if without test keyword with[]
+[root@bharathi ~]# vi prg10.sh
+#!/bin/bash
+#Demonstrate if condition
+read -p "Enter the first number:" num1
+read -p "Enter the second number:" num2
+#Now compare if num1 is big
+if [ $num1 -gt $num2 ]
+then
+    echo "$num1 is big"
+fi
+
+#compare if num2 is big
+if [ $num2 -gt $num1 ]
+then
+   echo "$num2 is big"
+fi
+
+#check if both are equal
+if [ $num1 -eq $num2 ]
+then
+   echo "$both are equal"
+fi
+
+#check for inquality
+if [ $num1 -ne $num2 ]
+then
+   echo "Number are not equal"
+fi
+#end of the script
+[root@bharathi ~]# ./prg10.sh
+-bash: ./prg10.sh: Permission denied
+
+[root@bharathi ~]# chmod u+x prg10.sh
+[root@bharathi ~]# ./prg10.sh
+Enter the first number:20
+Enter the second number:30
+30 is big
+Number are not equal
+************************************************************************************************
+11)script using without test keyword with (( )){take same script as above}
+[root@bharathi ~]# vi prg11.sh
+#!/bin/bash
+read -p "Enter the first number" num1
+read -p "Enter the second number" num2
+if ((num1>num2))
+then
+   echo "$num1 is big"
+fi
+
+if ((num2<num1))
+then
+    echo "$num2 is big"
+fi
+
+if ((num1==num2))
+then
+   echo "Both are equal"
+fi
+
+if((num1!=num2))
+then
+    echo "Both are not equal"
+fi
+#end
+
+[root@bharathi ~]# ./prg11.sh
+-bash: ./prg11.sh: Permission denied
+[root@bharathi ~]# chmod u+x prg11.sh
+[root@bharathi ~]# ./prg11.sh
+Enter the first number20
+Enter the second number90
+Both are not equal
+[root@bharathi ~]# ./prg11.sh
+Enter the first number100
+Enter the second number100
+Both are equal
+**************************************************************************************************
+
+13)if...then..else..fs
+[root@bharathi programs]# vi prg13.sh
+#!/bin/bash
+read -p "Enter the first number" num1
+read -p "Enter the second number" num2
+#Test if te first number is big
+if ((num1>num2))
+then
+    echo "Given number $num1 is bigger than $num2"
+else
+    echo "$num1 is not bigger than $num2"
+fi
+#End
+
+[root@bharathi programs]# ./prg13.sh
+-bash: ./prg13.sh: Permission denied
+[root@bharathi programs]# chmod u+x ./prg13.sh
+[root@bharathi programs]# ./prg13.sh
+Enter the first number20
+Enter the second number30
+20 is not bigger than 30
+[root@bharathi programs]# ./prg13.sh
+Enter the first number80
+Enter the second number30
+Given number 80 is bigger than 30
+[root@bharathi programs]# cat ./prg13.sh
+#!/bin/bash
+read -p "Enter the first number" num1
+read -p "Enter the second number" num2
+#Test if te first number is big
+if ((num1>num2))
+then
+    echo "Given number $num1 is bigger than $num2"
+else
+    echo "$num1 is not bigger than $num2"
+fi
+#End
+**************************************************************************************************
+ 
+14)This script find if the given user exists in this system
+[root@bharathi programs]# vi prg14.sh
+#!/bin/bash
+#This script find if the given user exists in this system
+read -p "Enter the username:" name
+grep -w ^$name /etc/passwd > /dev/null
+if [ $? -eq 0 ]
+then
+  echo "User Exists"
+else
+  echo "User does't Exists"
+fi #if close
+#Script Ends here.
+[root@bharathi programs]# ./prg14.sh
+-bash: ./prg14.sh: Permission denied
+[root@bharathi programs]# chmod u+x ./prg14.sh
+[root@bharathi programs]# ./prg14.sh
+Enter the username:gani
+User Exists
+[root@bharathi programs]# ./prg14.sh
+Enter the username:sam
+User does't Exists
+
+[root@bharathi programs]# grep -w ^sam /etc/passwd
+[root@bharathi programs]# echo $?
+1         (note:here 1 means user sam is not exist in system)
+[root@bharathi programs]# grep -w ^gani /etc/passwd
+gani:x:7829:7832::/home/gani:/bin/bash
+[root@bharathi programs]# echo $?
+0          (note:here 0 means user gani is existed in system)
+
+[root@bharathi programs]# cat ./prg14.sh
+#!/bin/bash
+#This script find if the given user exists in this system
+read -p "Enter the username:" name
+grep -w ^$name /etc/passwd > /dev/null
+if [ $? -eq 0 ]
+then
+  echo "User Exists"
+else
+  echo "User does't Exists"
+fi #if close
+#Script Ends here.
+
+*****************************************************************************************************
+15)script to create user and set password for the same
+[root@bharathi programs]# vi prg15.sh
+#!/bin/bash
+#script to create user and set password for the same
+read -p "Enter the username:" name
+grep -w ^$name /etc/passwd > /dev/null
+if [[ $? -eq 0 ]]
+then
+  echo "User $name found in the system. could not create..Exiting"
+else
+   read -sp "Enter the password for user $name :" pass
+   useradd $name
+   echo "$name:$pass"|chpasswd
+   echo -e "\nUser $name create.."
+fi
+#if End here
+#End of the script
+
+[root@bharathi programs]# ./prg15.sh
+-bash: ./prg15.sh: Permission denied
+[root@bharathi programs]# chmod u+x ./prg15.sh
+[root@bharathi programs]# ./prg15.sh
+Enter the username:gani
+User gani found in the system. could not create..Exiting
+[root@bharathi programs]# ./prg15.sh
+Enter the username:sowmya
+Enter the password for user sowmya :
+User sowmya create..
+[root@bharathi programs]# cat ./prg15.sh
+#!/bin/bash
+#script to create user and set password for the same
+read -p "Enter the username:" name
+grep -w ^$name /etc/passwd > /dev/null
+if [[ $? -eq 0 ]]
+then
+  echo "User $name found in the system. could not create..Exiting"
+else
+   read -sp "Enter the password for user $name :" pass
+   useradd $name
+   echo "$name:$pass"|chpasswd
+   echo -e "\nUser $name create.."
+fi
+#if End here
+#End of the script
+****************************************************************************************************
+16)Nested if 
+[root@bharathi programs]# vi prg16.sh
+#!/bin/bash
+#Script to create user and set password for the same.
+read -p "Enter the user name:" name
+if [[ -n $name ]]
+then
+ grep -w ^$name /etc/passw>/dev/null
+ if [[ $? -eq 0 ]]
+ then
+   echo "User $name found in the system. Could not Create..Exiting"
+ else
+   read -sp "Enter the password for user $name :" pass
+   useradd $name
+   echo "$name:$pass"|chpasswd
+   echo -e "\nUser $name created.."
+  fi
+  #if Endd here
+else
+ echo "Invalid User Name.. Try Again.."
+fi #Outer if ends here
+#End of the script
+
+
+[root@bharathi programs]# ./prg16.sh
+-bash: ./prg16.sh: Permission denied
+	
+[root@bharathi programs]# chmod u+x ./prg16.sh
+[root@bharathi programs]# ./prg16.sh
+Enter the user name:gani
+User gani found in the system. Could not Create..Exiting
+[root@bharathi programs]# ./prg16.sh
+Enter the user name:neethu
+User neethu found in the system. Could not Create..Exiting
+[root@bharathi programs]# ./prg16.sh
+Enter the user name:bhanu
+Enter the password for user bhanu :
+User bhanu created..
+******************************************************************************************************17)Logical operators
+[root@bharathi programs]# vi prg17.sh
+#!/bin/bash
+read -p "Enter first value:" num1
+read -p "Enter second value:" num2
+read -p "Enter third value:" num3
+if test $num1 -gt $num2 -a $num1 -gt $num3
+then
+  echo $num1 is big
+fi
+
+[root@bharathi programs]# ./prg17.sh
+-bash: ./prg17.sh: Permission denied
+[root@bharathi programs]# chmod u+x ./prg17.sh
+[root@bharathi programs]# ./prg17.sh
+Enter first value:20
+Enter second value:15
+Enter third value:15
+20 is big
+******************************************************************************************************
+18)Script to work Unary Operators
+[root@bharathi programs]# vi prg18.sh
+#Script to work Unary Operators
+#!/bin/bash
+echo "You are testing Pre and Post Increment and Decrement operators :-)"
+echo "Enter a number - Value of x: "
+read x # where x is a variable obtianed its value from keyboard
+echo "Value after post Increment of x by executing x++  is $[x++]"
+echo "Value after pre Increment of x by executing ++x  is $[++x]"
+echo "Value after post Decrement of x by executing x-- is $[x--]"
+echo "Value after pre Decrement of x by executing --x is $[--x]"
+#End of the Script
+
+[root@bharathi programs]# ./prg18.sh
+-bash: ./prg18.sh: Permission denied
+[root@bharathi programs]# chmod u+x prg18.sh
+[root@bharathi programs]# ./prg18.sh
+You are testing Pre ans Post Increment and Decrement operators :-)
+Enter a number - Value of x:
+20
+Value after post Increment of x by executing x++  is 20
+Value after pre Increment of x by executing ++x  is 22
+Value after post Decrement of x by executing x-- is 22
+Value after pre Decrement of x by executing --x is 20
+
+*****************************************************************************************************
+19)script for print names
+[root@bharathi shellscripts]# vi prg19.sh
+#!/bin/bash
+# print names
+for i in mounika lavanya bharthi nuthna
+do
+  echo "hi there $i"
+done
+#end
+
+[root@bharathi shellscripts]# chmod +x ./prg19.sh
+[root@bharathi shellscripts]# ./prg19.sh
+
+***************************************************************************************************
+20)script for print disks
+[root@bharathi shellscripts]# vi prg20.sh
+#!/bin/bash
+count=0
+for i in `ls /dev/sd?`
+do
+  echo $i
+  ((count++))
+done
+echo "you have $count block devices in this sytem"
+#End
+[root@bharathi shellscripts]# chmod +x ./prg20.sh
+[root@bharathi shellscripts]# ./prg20.sh
+/dev/sda
+/dev/sdb
+/dev/sdc
+/dev/sdd
+/dev/sde
+/dev/sdf
+***************************************************************************************************
+21)script for print lvs
+[root@bharathi shellscripts]# vi prg21.sh
+#!/bin/bash
+count=0
+for i in `lvs --noheading -o lv_name`
+do
+  echo $i
+  ((count++))
+done
+echo "you have $count lvs in your system"
+#End
+
+[root@bharathi shellscripts]# chmod +x ./prg21.sh
+
+
+
+[root@bharathi shellscripts]# ./prg21.sh
+  WARNING: VG name multivg is used by VGs c3F8Ho-IQQh-0hqd-hgIU-BVGu-b503-nCLaQI and XfNDkz-Fk3Y-s5kJ-IfvA-uBqp-YGD6-bRNUm7.
+  Fix duplicate VG names with vgrename uuid, a device filter, or system IDs.
+multilv02
+multilv04
+you have 2 lvs in your system
+***************************************************************************************************
+22)script for print vgs
+[root@bharathi shellscripts]# vi prg22.sh
+#!/bin/bash
+count=0
+for i in `vgs --noheading -o vg_name`
+do
+  echo $i
+  ((count++))
+done
+echo "you have $count vgs in this system"
+#End
+
+[root@bharathi shellscripts]# chmod +x ./prg21.sh
+
+[root@bharathi shellscripts]# ./prg22.sh
+  WARNING: VG name multivg is used by VGs c3F8Ho-IQQh-0hqd-hgIU-BVGu-b503-nCLaQI and XfNDkz-Fk3Y-s5kJ-IfvA-uBqp-YGD6-bRNUm7.
+  Fix duplicate VG names with vgrename uuid, a device filter, or system IDs.
+multivg
+multivg
+you have 2 vgs in this system
+***************************************************************************************************
+23)script for print vgs and lvs
+[root@bharathi shellscripts]# vi prg23.sh
+
+#!/bin/bash
+count=0
+for i in `vgs --noheading -o vg_name`
+do
+  echo $i
+  ((count++))
+done
+echo "you have $count vgs in this system"
+for i in `lvs --noheading -o lv_name`
+do
+  echo $i
+  ((count++))
+done
+echo "you have $count lvs in your system"
+#End
+
+[root@bharathi shellscripts]# chmod +x ./prg23.sh
+
+[root@bharathi shellscripts]# ./prg23.sh
+  WARNING: VG name multivg is used by VGs c3F8Ho-IQQh-0hqd-hgIU-BVGu-b503-nCLaQI and XfNDkz-Fk3Y-s5kJ-IfvA-uBqp-YGD6-bRNUm7.
+  Fix duplicate VG names with vgrename uuid, a device filter, or system IDs.
+multivg
+multivg
+you have 2 vgs in this system
+  WARNING: VG name multivg is used by VGs c3F8Ho-IQQh-0hqd-hgIU-BVGu-b503-nCLaQI and XfNDkz-Fk3Y-s5kJ-IfvA-uBqp-YGD6-bRNUm7.
+  Fix duplicate VG names with vgrename uuid, a device filter, or system IDs.
+multilv02
+multilv04
+you have 4 lvs in your system
+***************************************************************************************************
+24)script for copying a file from local system to remote system
+[root@bharathi shellscripts]# vi prg24.sh
+#!/bin/bash
+#copying a file from local system to remote system
+read -p "Enter the file name to copy          : " file
+read -p "Enter the server ip to copy the file : " remoteip
+`scp $file $remoteip:/tmp`
+
+
+[root@bharathi shellscripts]# chmod +x ./prg24.sh
+
+[root@bharathi shellscripts]# ./prg24.sh
+Enter the file name to copy          : /root/n.out
+Enter the server ip to copy the file : 192.168.1.93
+root@192.168.1.93's password:
+[root@bharathi shellscripts]
+
+#!/bin/bash
+#copying a file from local system to remote system
+read -p "Enter the server ip to copy the file from : " remoteip
+read -p "Enter the file path for copy to local     : " file
+read -p "Enter the directory of the file            : " dir
+`scp $remoteip:$dir:$file /tmp/`
+echo "copied successfully $file from remoteip from $dir"
+
+***************************************************************************************************
+25)script for demonstrate c style for loop structure:
+
+[root@bharathi shellscripts]# vi prg25.sh
+#!/bin/bash
+#demonstrate c style for loop structure
+#Print natural numbers for the given upper limit
+read -p "Enter the upper limit to print natural numbers:" n
+	for ((i=1;i<=n;i++))
+do
+ echo $i
+done
+
+[root@bharathi shellscripts]# chmod +x ./prg25.sh
+[root@bharathi shellscripts]# ./prg25.sh
+Enter the upper limit to print natural numbers:6
+1
+2
+3
+4
+5
+6
+***************************************************************************************************
+26)Demonstrate while loop:
+
+[root@bharathi shellscripts]# vi prg26.sh
+#!/bin/bash
+#Demonstrate while loop
+echo "Read upper limit to print natural numbers:"
+read n
+i=1
+while [ $i -le $n ]
+do
+ echo $i
+ ((i++))
+done
+#End
+
+[root@bharathi shellscripts]# chmod +x ./prg26.sh
+[root@bharathi shellscripts]# ./prg26.sh
+Read upper limit to print natural numbers:
+10
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+[root@bharathi shellscripts]#
+***************************************************************************************************
+27)Demonstrate infinite while loop
+
+[root@bharathi shellscripts]# vi prg27.sh
+#!/bin/bash
+#Demonstrate infinite while loop
+#while true
+while :   #same as the above line
+do
+  echo Hi
+  sleep 1
+done
+
+[root@bharathi shellscripts]# chmod +x ./prg26.sh
+[root@bharathi shellscripts]# ./prg27.sh
+Hi
+Hi
+Hi
+Hi
+Hi
+Hi
+^C
+[root@bharathi shellscripts]#
+***************************************************************************************************
+28)demonstrate infinite while loop
+
+[root@bharathi shellscripts]# vi prg28.sh
+#!/bin/bash
+#demonstrate infinite while loop
+#use break key word to break the loop
+#while true
+count=1 #counter initialization
+>t.out  #create empty file
+while :
+do
+  read -p "Enter the text.. End this with "stop" word : " t1
+  if [ $t1 = stop ]
+  then
+      echo "You asked me to stop... Thank you."
+      echo "You entered the below data: "
+      cat t.out
+      break
+  fi
+  #insert the read data into t.out
+  echo $t1>>t.out
+  echo "Continuing the loop... now in iteration $count"
+  ((count++))
+done
+
+[root@bharathi shellscripts]# chmod +x ./prg28.sh
+[root@bharathi shellscripts]# ./prg28.sh
+Enter the text.. End this with stop word : green
+Continuing the loop... now in iteration 1
+Enter the text.. End this with stop word : blue
+Continuing the loop... now in iteration 2
+Enter the text.. End this with stop word : black
+Continuing the loop... now in iteration 3
+Enter the text.. End this with stop word : stop
+You asked me to stop... Thank you.
+You entered the below data:
+green
+blue
+black
+
+**************************************************************************************************
+29)Create users .. using while loop
+
+[root@bharathi shellscripts]# vi prg29.sh
+#!/bin/bash
+#Create users .. using while loop
+#
+while :
+do
+ read -p "Enter username to add(use 'stop' to exit):" u1
+ if [ $u1 = stop ] #out if begins
+ then
+   break
+ else
+  #search if the user already exists
+  grep -w ^$u1 /etc/passwd > /dev/null 2>&1
+  if [ $? != 0 ] #inner if begins
+  then
+   useradd $u1
+   #set the password same as username
+   echo "$u1" | passwd --stdin $u1 > /dev/null 2>&1
+ else
+   echo "Cant create user.. $1 user exists...Continue with next user"
+ fi #inner if close
+fi #Outer if
+done #while close
+
+[root@bharathi shellscripts]# chmod +x ./prg29.sh
+
+[root@bharathi shellscripts]# ./prg29.sh
+Enter username to add(use 'stop' to exit):troy1
+useradd: cannot create directory /home/troy1
+Enter username to add(use 'stop' to exit):troy2
+useradd: cannot create directory /home/troy2
+Enter username to add(use 'stop' to exit):stop
+[root@bharathi shellscripts]#
+***************************************************************************************************
+30)
+[root@bharathi shellscripts]# vi prg30.sh
+#!/bin/bash
+#print the content of a file
+#Read the filename from keyboard
+read -p "Enter the absolute path of the filename: " fname
+#Check if file exists(-e option) and its a regular file (-f option)
+count=0
+if [ -e $fname ] && [ -f $fname ]
+then
+   #user exec command to read the file contents line by line
+   #If the file reaches end of the file, the read command fails to read it; this make while loop to break
+   exec < $fname
+   #the above line reads entire file and keeps all the links in the read buffer.
+   #Now read the 'read buffer' till end of its line. once eof reach, the read command returns non zero
+   while read data  #where data is the variable name. Entire line is assigned to variable data
+   do
+     echo $data
+     ((count++)) #to check number of lines
+   done #loop exits when read command returns non-zero (unsuccess) ie EOF
+   echo "Number line in the file $fname: $count"
+else
+  echo "File $fname does not exists.. Try again"
+fi
+#End of the script
+
+[root@bharathi shellscripts]# chmod +x ./prg30.sh
+
+[root@bharathi shellscripts]# ./prg30.sh
+Enter the absolute path of the filename: /root/numbers.txt
+23
+443
+860
+246
+-453
+0
+2345
+1253
+75
+789
+234
+54
+143
+443
+-23
+45
+Number line in the file /root/numbers.txt: 16
+***************************************************************************************************
+31)
+[root@bharathi shellscripts]# vi prg31.sh
+#!/bin/bash
+#print number of volume groups in this system
+#Also print number of logical volumes for each vg
+count=0 #vgcount sent to zero as initial value
+for i in `vgs -o vgname --noheading`
+do
+ ((count++))
+done
+echo "There are $count volume groups in this system $(hostname)"
+#print number of logicl volumes. For every VG, get the lvs count
+t=0 #Total lv counts set to zero
+for i in `vgs -o vgname --noheading`
+do
+  lcount=0 #lcount is to count number of lvs. Set its initial value to zero
+  for i in `lvs $i -o lvname --noheading` #for every vg, count number of lvs
+  do
+    ((lcount++))
+  done #Inner for loop ends here
+  echo "Found $lcount lvs in $i volume group"
+  t=`expr $t + $lcount`
+done #outer loop ends
+echo "The number rof total logical volumes are $t"
+#End of the script
+
+[root@bharathi shellscripts]# chmod +x ./prg30.sh
+
+[root@bharathi shellscripts]# ./prg31.sh
+  WARNING: VG name multivg is used by VGs c3F8Ho-IQQh-0hqd-hgIU-BVGu-b503-nCLaQI and XfNDkz-Fk3Y-s5kJ-IfvA-uBqp-YGD6-bRNUm7.
+  Fix duplicate VG names with vgrename uuid, a device filter, or system IDs.
+There are 2 volume groups in this system bharathi.alclabs.in
+  WARNING: VG name multivg is used by VGs c3F8Ho-IQQh-0hqd-hgIU-BVGu-b503-nCLaQI and XfNDkz-Fk3Y-s5kJ-IfvA-uBqp-YGD6-bRNUm7.
+  Fix duplicate VG names with vgrename uuid, a device filter, or system IDs.
+  WARNING: VG name multivg is used by VGs c3F8Ho-IQQh-0hqd-hgIU-BVGu-b503-nCLaQI and XfNDkz-Fk3Y-s5kJ-IfvA-uBqp-YGD6-bRNUm7.
+  Fix duplicate VG names with vgrename uuid, a device filter, or system IDs.
+  Multiple VGs found with the same name: skipping multivg
+  Use --select vg_uuid=<uuid> in place of the VG name.
+Found 0 lvs in multivg volume group
+  WARNING: VG name multivg is used by VGs c3F8Ho-IQQh-0hqd-hgIU-BVGu-b503-nCLaQI and XfNDkz-Fk3Y-s5kJ-IfvA-uBqp-YGD6-bRNUm7.
+  Fix duplicate VG names with vgrename uuid, a device filter, or system IDs.
+  Multiple VGs found with the same name: skipping multivg
+  Use --select vg_uuid=<uuid> in place of the VG name.
+Found 0 lvs in multivg volume group
+The number rof total logical volumes are 0
+***************************************************************************************************
+32)
+[root@bharathi shellscripts]# vi prg32.sh
+#!/bin/bash
+#Read the variable from the keyboard till you hit Enter Key(blank variable)
+v=1 #assign random data to variable, so that it will not be blank
+while [ -n "$v" ] #variable length must not zero length
+do
+ echo "Enter the text. End with Enter key..:"
+ read v
+ if [ -n "$v" ]
+ then
+    echo "you entered $v"
+ else
+    echo "Exiting now.."
+ fi
+
+done
+#End of the script
+
+[root@bharathi shellscripts]# chmod +x ./prg32.sh
+
+[root@bharathi shellscripts]# ./prg32.sh
+Enter the text. End with Enter key..:
+t
+you entered t
+Enter the text. End with Enter key..:
+hi
+you entered hi
+Enter the text. End with Enter key..:
+
+
+***************************************************************************************************
+33)
+[root@bharathi shellscripts]# vi prg33.sh
+#!/bin/bash
+#Demonstrate until loop
+#Till condition becomes true, the loop executes
+c=1
+until [ $c -gt 10 ]
+do
+  echo $c
+  ((c++))
+done
+#End
+
+[root@bharathi shellscripts]# chmod +x ./prg33.sh
+
+[root@bharathi shellscripts]# ./prg33.sh
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+[root@bharathi shellscripts]#
+***************************************************************************************************
+34)
+[root@bharathi shellscripts]# vi prg34.sh
+#!/bin/bash
+#Demonstrate case statement
+read -p "Enter the OS name 9Ex: solaris, aix, linux, unix, windows, Macos):" os
+case $os in
+  solaris)
+          echo "The os selected is Solaris"
+          ;;
+      aix)
+          echo "The os selected is aix"
+          ;;
+    linux)
+          echo "The os selected is Linux"
+          ;;
+     unix)
+          echo "The os selected is unix"
+          ;;
+   windows)
+          echo "The os selected is windows"
+          ;;
+   MacOS)
+          echo "The os selected is MacOS"
+          ;;
+       *)
+          echo "you entered other solaris, aix, linux, unix, windows, MacOS.."
+          ;;
+esac #Case statement Ends here
+#End of the program
+
+[root@bharathi shellscripts]# chmod +x ./prg34.sh
+
+[root@bharathi shellscripts]# ./prg34.sh
+Enter the OS name 9Ex: solaris, aix, linux, unix, windows, Macos):windows
+The os selected is windows
+[root@bharathi shellscripts]#
+***************************************************************************************************
+35)
+[root@bharathi shellscripts]# vi prg35.sh
+#!/bin/bash
+#Demonstrate case statemet for arithmetic operations
+#Read two numbers from the command line
+#If no command line arguments given, then read from the keyboard
+#Check if command line arguments are entered
+if [ $# -eq 2 ]
+then
+ echo "Found command line arguments $1 and $2 for arithmetic operations"
+ num1=$1
+ num2=$2
+else
+#read from the keyboad
+echo "Command line arguments not received.. Input num1 and num2 from keyboard"
+read -p "Enter first number:" num1
+read -p "Enter second number:" num2
+fi #reading variables done
+#compute arithmetic operations now.
+echo "
+        MENU
+        1.ADD
+        2.SUBTRACT
+        3.DIVISION
+        4.MULTIPLICATION
+        5.EXIT"
+read -p "Enter your choice [1..5]:" op
+case $op in
+1)
+  res=`echo $num1+$num2|bc`
+  echo "Additon of $num1 and $num2 :" $res
+  ;;
+2)
+  res=`echo $num1-$num2|bc`
+  echo "Subtraction of $num2 from  $num1 :" $res
+  ;;
+3)
+  res=`echo "scale=2; $num1/$num2"|bc`
+  echo "Division of $num1 and $num2 :" $res
+  ;;
+4)
+  res=`echo $num1*$num2|bc`
+  echo "Multiplication of $num1 and $num2 :" $res
+  ;;
+5)
+  echo "You have choosen to exit"
+  ;;
+*)
+  echo "Invalid Option selected.. Exiting"
+esac #Case ends here
+#End of the script
+
+[root@bharathi shellscripts]# vi prg35.sh
+
+[root@bharathi shellscripts]# ./prg35.sh
+Command line arguments not received.. Input num1 and num2 from keyboard
+Enter first number:20
+Enter second number:40
+
+        MENU
+        1.ADD
+        2.SUBTRACT
+        3.DIVISION
+        4.MULTIPLICATION
+        5.EXIT
+Enter your choice [1..5]:4
+Multiplication of 20 and 40 : 800
+***************************************************************************************************
+36)
+[root@bharathi shellscripts]# vi prg36.sh
+#!/bin/bash
+echo "Enter your name: " name
+read name
+case $name in
+bharthi|BHARTHI|bharthi)
+                       echo "Entered was $name"
+                       ;;
+*)
+ echo "In the default option ... Entered was $name"
+ ;;
+esac
+
+[root@bharathi shellscripts]# chmod +x ./prg36.sh
+
+[root@bharathi shellscripts]# ./prg36.sh
+Enter your name:  name
+bharthi
+Entered was bharthi
+[root@bharathi shellscripts]#
+
+***************************************************************************************************
+
+37)
+[root@bharathi shellscripts]# vi prg37.sh
+#!/bin/bash
+
+echo -e "\tsystem Information:-"
+echo -e "\t********************"
+echo "
+     1. Display your working kernel name
+     2. Display your shell name
+     3. Login name
+     4. Today Date
+     5. Current working directory path"
+echo -e "\t********************"
+echo -n "Enter your option : ";read n
+case $n in
+1) echo "working kernel name is $(uname)"
+   version is $(uname -r)"
+;;
+2) echo "kernel shell is $SHELL
+   version is $BASH_VERSION"
+;;
+3) echo "My login name $LOGNAME and login id is $UID" ;;
+4) echo "Today: `date +%10" ;;
+5) echo " pwd " ;;
+*) echo "sorry $n is invalid option..select from [1 to 5]"
+esac
+
+[root@bharathi shellscripts]# chmod +x ./prg37.sh
+
+[root@bharathi shellscripts]# ./prg37.sh
+
+***************************************************************************************************
+38)
+[root@bharathi shellscripts]# vi prg38.sh
+#!/bin/bash
+
+echo "Enter var1 and var2"
+read v1;read v2
+opt=""
+echo "Enter Artgh.operator:+,-,*. Type e for exit"
+read opt
++) echo `echo $v1 + $v2 | bc` ;;
+-) echo `echo $v1 - $v2 | bc` ;;
+\*) echo `echo $v1 \* $v2 | bc` ;;
+e) exit ;;
+*) echo "$opt is invalid operator.."
+esac
+
+[root@bharathi shellscripts]# chmod +x ./prg38.sh
+
+[root@bharathi shellscripts]# ./prg38.sh
+Enter var1 and var2
+2
+5
+Enter Artgh. Operation:+,-,*. Type e for exit
+*
+./prg38.sh: line 10: syntax error near unexpected token `echo'
+./prg38.sh: line 10: `\) echo `echo $v1 \ $v2 | bc` ;;'
+
+*************************************************************************************************
+39)
+[root@bharathi shellscripts]# vi prg39.sh
+#!/bin/bash
+if [ $# -ne 1 ]
+then
+   echo "You entered invalid number of arguments.. Usage $0 username"
+else
+  echo " Menu
+  1.Add User
+  2.Delete User
+  3.List User Attributes
+  4.Exit
+  Read your choice 1-4 : "
+  read num
+  case $num in
+  1) grep -w ^$1 /etc/passwd > /dev/null 2>$1
+     if [ $? -ne 0 ]
+     then
+         useradd $1
+         echo "Provide password : "
+         read -sp pass
+         echo "$pass" | passwd --stdin $1 > /dev/null 2>$1
+     else
+         echo "Cant create user.. it exists..Exiting.."
+     fi
+   ;;
+  2) grep -w ^$1 /etc/passwd > /dev/null 2>$1
+     if [ $? -eq 0 ]
+     then
+        userdel -r $1
+     else
+        echo "Cant delete user..Doesnt exists..Exiting.."
+     fi
+   ;;
+  3) grep -w ^$1 /etc/passwd > /dev/null 2>$1
+     if [ $? -eq 0 ]
+     then
+         grep -w ^$1 /etc/passwd
+         chage -l $1
+     else
+        echo "Cant list user details..Doesnt exists..Exiting.."
+     fi
+   ;;
+  4) echo "You have choosen exit option..exiting..."
+   ;;
+  *) echo "You have choosen invalid option..exiting..."
+   ;;
+ esac
+fi
+
+[root@bharathi shellscripts]# chmod +x ./prg39.sh
+
+[root@bharathi shellscripts]# ./prg39.sh jk
+ Menu
+  1.Add User
+  2.Delete User
+  3.List User Attributes
+  4.Exit
+  Read your choice 1-4 :
+1
+useradd: cannot create directory /home/jk
+Provide password :
+pass
+
+**************************************************************************************************
+
+40)
+[root@bharathi shellscripts]# vi prg40.sh
+#!/bin/bash
+read -p "Enter the first string:" name1
+read -p "Enter the second string:" name2
+if [[ $name1 -eq $name2 ]]
+then
+ echo "the entered two strings are equal"
+else
+ echo "you entered strings are not equal"
+fi
+[root@bharathi shellscripts]# chmod +x prg40.sh
+[root@bharathi shellscripts]# ./prg40.sh
+Enter the first string:22
+Enter the second string:44
+you entered strings are not equal
+**************************************************************************************************
+41)
+[root@bharathi shellscripts]# vi prg41.sh
+#!/bin/bash
+read -p "Enter the path of the file or dir:" path
+if
+ls -l  $path| grep ^-
+then
+  echo "you entered path is ordinary file"
+elif
+ls -ld  $path | grep ^d
+then
+  echo "you enetered path is directory"
+else
+ls -l $path | grep ^l
+   echo "you entered path is linked file"
+fi
+#End
+
+[root@bharathi shellscripts]# chmod +x ./prg41.sh
+[root@bharathi shellscripts]# ./prg41.sh
+Enter the path of the file or dir:/root/numbers.txt
+-rw-r--r-- 1 root root 61 Feb 20 23:49 /root/numbers.txt
+you entered path is ordinary file
+*************************************************************************************************
+42)
+#!/bin/bash
+while true;
+do
+echo "MENU"
+echo "P.Print PVs"
+echo "V.Print VGs"
+echo "L.Print LVs"
+echo "B.Print Block Devices"
+echo "OS.Print OS Version"
+echo "E.Exit"
+read -p "Enter the option from menu:" opt
+case $opt in
+P)
+  echo "printing pvs in system"
+   pvdisplay
+  ;;
+V)
+    echo "printing vgs in system"
+     vgdisplay
+     ;;
+L)
+    echo "printing lvs in system"
+    lvdisplay
+    ;;
+B)
+    echo "printing block dev  in system"
+    lsblk
+    ;;
+OS)
+
+  echo "printing pvs in system"
+  uname -r
+  ;;
+
+*)
+   echo "invalid entry"
+   ;;
+
+E)
+       echo "existing from script in system"
+       exit 0
+       ;;
+
+esac
+
+done
+~
+
+[root@bharathi shellscripts]# chmod +x ./prg42.sh
+[root@bharathi shellscripts]# ./prg42.sh
+MENU
+P.Print PVs
+V.Print VGs
+L.Print LVs
+B.Print Block Devices
+OS.Print OS Version
+E.Exit
+Enter the option from menu:p
+invalid entry
+MENU
+P.Print PVs
+V.Print VGs
+L.Print LVs
+B.Print Block Devices
+OS.Print OS Version
+E.Exit
+Enter the option from menu:P
+printing pvs in system
+  WARNING: VG name multivg is used by VGs c3F8Ho-IQQh-0hqd-hgIU-BVGu-b503-nCLaQI and XfNDkz-Fk3Y-s5kJ-IfvA-uBqp-YGD6-bRNUm7.
+  Fix duplicate VG names with vgrename uuid, a device filter, or system IDs.
+  --- Physical volume ---
+  PV Name               /dev/sdd
+  VG Name               multivg
+  PV Size               5.00 GiB / not usable 32.00 MiB
+  Allocatable           yes
+  PE Size               16.00 MiB
+  Total PE              318
+  Free PE               254
+  Allocated PE          64
+  PV UUID               qDlCTk-DQso-ThG1-3la2-F30d-ZjoF-m8ijNR
+
+  --- Physical volume ---
+  PV Name               /dev/sdc
+  VG Name               multivg
+  PV Size               5.00 GiB / not usable 32.00 MiB
+  Allocatable           yes
+  PE Size               16.00 MiB
+  Total PE              318
+  Free PE               254
+  Allocated PE          64
+  PV UUID               LZy3qZ-jJRE-r9xv-9jQd-mrNL-nfbq-iuEVr8
+
+
+**************************************************************************************************
+43)
+[root@bharathi shellscripts]# vi prg43.sh
+#!/bin/bash
+read -p "Enter the first string :" str1
+read -p "Enter the second string :" str2
+if [ "$str1" == "$str2" ]
+then
+ echo "The $str1 and $str2 are equal"
+else
+ echo "The $str1 and $str2 are not equal"
+fi
+
+[root@bharathi shellscripts]# chmod +x ./prg43.sh
+
+[root@bharathi shellscripts]# ./prg43.sh
+Enter the first string :33
+Enter the second string :88
+The 33 and 88 are not equal
+
+
+***************************************************************************************************
+44)
+[root@bharathi shellscripts]# vi prg43.sh
+[root@bharathi shellscripts]# vi prg43.sh
+#!/bin/bash
+read -p "Enter the first number:" num1
+read -p "Enter the second number:" num2
+read -p "Enter the third number:" num3
+if [ $num1 -gt $num2 ] && [ $num1 -gt $num3 ]
+then
+ echo "The first number is bigger number"
+  if [ $num2 -gt $num1 ] && [ $num2 -gt $num3 ]
+  then
+   echo "The second number is bigger number"
+  fi
+else
+   echo "the third number is bigger number"
+fi
+
+[root@bharathi shellscripts]# chmod +x ./prg43.sh
+[root@bharathi shellscripts]# ./prg43.sh
+Enter the first number:20
+Enter the second number:22
+Enter the third number:45
+the third number is bigger number
+***************************************************************************************************
+45)
+
+[root@bharathi shellscripts]# vi prg45.sh
+#!/bin/bash
+read -p "Enter the username:" name
+grep -w ^$name /etc/passwd>/dev/null
+if [ $? == 0 ]
+then
+ echo "user exist and user should be locked"
+ usermod -L $name
+else
+ echo "user dosen't exist"
+fi
+
+[root@bharathi shellscripts]# chmod +x ./prg45.sh
+[root@bharathi shellscripts]# ./prg45.sh
+Enter the username:anu
+user exist and user should be locked
+
+**************************************************************************************************
+46)
+[root@bharathi shellscripts]# vi prg46.sh
+#!/bin/bash
+
+if [[ $# -ne 1 ]]; then
+  echo "Error: Please provide a username as a positional parameter."
+  exit 1
+fi
+
+username=$1
+
+if id -u $username >/dev/null 2>&1; then
+  echo "User $username already exists in the system."
+  exit 1
+fi
+
+echo "Creating user $username..."
+useradd $username
+
+echo "Setting password for user $username..."
+passwd $username
+
+echo "User $username has been created with the provided password."
+
+[root@bharathi shellscripts]# chmod +x ./prg46.sh
+
+[root@bharathi shellscripts]# ./prg46.sh jimmy
+Creating user jimmy...
+useradd: cannot create directory /home/jimmy
+Setting password for user jimmy...
+Changing password for user jimmy.
+New password:
+BAD PASSWORD: The password is shorter than 8 characters
+Retype new password:
+passwd: all authentication tokens updated successfully.
+User jimmy has been created with the provided password.
+
+***************************************************************************************************
+47)
+[root@bharathi shellscripts]# vi prg47.sh
+#!/bin/bash
+#Check if the given file exist in the system. If yes, print the contents of the file.
+read -p "Enter the absolute path of the filename : " fname
+if [ -e $fname ] && [ -f $fname ]
+then
+  exec < $fname
+  while read data
+   do
+     echo $data
+   done
+else
+   echo "File $fname does not exists.. Try again.."
+fi
+
+[root@bharathi shellscripts]# chmod +x ./prg47.sh
+[root@bharathi shellscripts]# ./prg47.sh
+Enter the absolute path of the filename : /root/numbers.txt
+23
+443
+860
+246
+-453
+0
+2345
+1253
+75
+789
+234
+54
+143
+443
+-23
+45
+*************************************************************************************************
+
+
+
+
+
+
+
+
+
+
