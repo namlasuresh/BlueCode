@@ -1,5 +1,5 @@
-                        Umask
-
+                        Umaskthi sthi
+						this is chamged
 ******Umask calculation for root user *****
 note: 1.for root user default value is 022 
  2.for file permission is 666 and for Directry permission is 777
